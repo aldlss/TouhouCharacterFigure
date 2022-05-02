@@ -1,17 +1,27 @@
 ﻿#include "TorchModule.h"
-#include <cstring>
-TorchModule::TorchModule(const std::string ModuleRoute) : device{ "cuda" }, label{}, img{}
+#include <string>
+#include "torch/torch.h"
+#include "opencv2/opencv.hpp"
+#include "torch/script.h"
+TorchModule::TorchModule(const std::string ModuleRoute) : device{ "cuda" }, label{}, img{}, module(ModuleRoute)
 {
-	module = torch::jit::load(ModuleRoute);
-	module.eval();
-
+	auto moduleLoad = torch::jit::load(ModuleRoute);
+	moduleLoad.eval();
 }
 
 TorchModule::TorchModule() : device{ "cuda" } {}
 
+void TorchModule::setModule(std::string moduleRoute)
+{
+	auto moduleLoad = torch::jit::load(moduleRoute);
+	moduleLoad.eval();
+	module = moduleRoute;
+}
+
+
 void TorchModule::setImg(const std::string ImgRoute)
 {
-	img = cv::imread(ImgRoute);
+	img = ImgRoute;
 }
 
 void TorchModule::setLabel(std::vector<std::string> inputLable)
@@ -26,9 +36,13 @@ void TorchModule::setImgsFolderRoute(std::string Route)
 
 std::vector<std::pair<std::string, double>> TorchModule::FigureSingleImg()
 {
+
 	if (label.empty())return {};
-	cv::Mat imgtemp;
-	cv::cvtColor(img, imgtemp, cv::COLOR_BGR2RGB);
+	cv::Mat imgtemp, imgNow = cv::imread(img);
+	torch::Device(device.c_str());
+	auto moduleLoad = torch::jit::load(module);
+	moduleLoad.eval();
+	cv::cvtColor(imgNow, imgtemp, cv::COLOR_BGR2RGB);
 	cv::Mat imgFloat;
 	imgtemp.convertTo(imgFloat, CV_32F, 1.0 / 255);
 	cv::resize(imgFloat, imgFloat, cv::Size(512, 512));
@@ -39,7 +53,7 @@ std::vector<std::pair<std::string, double>> TorchModule::FigureSingleImg()
 	imgTensor[0][2] = imgTensor[0][2].sub_(0.406).div_(0.225);
 	std::vector<torch::jit::IValue>inputs2;
 	inputs2.push_back(imgTensor);
-	at::Tensor outputs = module.forward(inputs2).toTensor();
+	at::Tensor outputs = moduleLoad.forward(inputs2).toTensor();
 	//std::cout << outputs.sizes() << std::endl;
 	//std::cout << outputs << std::endl;
 	// std::string label12[] = { "Aya","Cirno","Flandre","Koishi","Marisa","Reimu","Reisen","Remilia","Sanae","Satori","Suwako","Youmu" };
@@ -74,12 +88,16 @@ void TorchModule::classifyImgs(std::string imgsRoute, std::string outPutRoute)
 		std::string chara = ans[0].first;
 		std::string imgName = imgRoute.substr(imgRoute.find_last_of('\\') + 1);
 		// std::cout << outPutRoute + "\\" + ans[0].first + "\\" + imgName;
-		cv::imwrite(outPutRoute + "\\" + chara + "\\" + imgName, img);
+		cv::imwrite(outPutRoute + "\\" + chara + "\\" + imgName, cv::imread(img));
 	}
 }
 
 void TorchModule::setLabel(std::string labelFileName)
 {
-	FILE* f = fopen(labelFileName.c_str(), "r");
-
+	label.clear();
+	std::string singleLabel{};
+	std::ifstream f(fopen(labelFileName.c_str(), "r"));
+	while (std::getline(f, singleLabel).good())
+		label.push_back(singleLabel);
+	if (singleLabel[0] != '\n' || !singleLabel.empty())label.push_back(singleLabel);
 }

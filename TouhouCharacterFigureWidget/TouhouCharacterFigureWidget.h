@@ -1,8 +1,15 @@
-﻿#pragma once
+﻿#ifndef _TCFW_
+#define _TCFW_
+
+#ifdef _EXPORTING  
+#define API_DECLSPEC    __declspec(dllexport)  
+#else  
+#define API_DECLSPEC    __declspec(dllimport)  
+#endif  
 
 #include <QtWidgets/QMainWindow>
 #include "ui_TouhouCharacterFigureWidget.h"
-#include "../TorchModule/TorchModule.h"
+#include "TorchModule.h"
 class TouhouCharacterFigureWidget : public QMainWindow
 {
 	Q_OBJECT
@@ -13,3 +20,5 @@ private:
 	Ui::TouhouCharacterFigureWidgetClass ui;
 	TorchModule module;
 };
+
+#endif//_TCFW_

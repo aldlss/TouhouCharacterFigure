@@ -1,17 +1,23 @@
-﻿#pragma once
-#include "torch/torch.h"
-#include<torch/script.h>
-#include<cstring>
+﻿#ifndef _TORCHMODULE_
+#define _TORCHMODULE_
+
+#ifdef _EXPORTING  
+#define API_DECLSPEC    __declspec(dllexport)  
+#else  
+#define API_DECLSPEC    __declspec(dllimport)  
+#endif  
+#include<string>
 #include <vector>
-#include<opencv2/opencv.hpp>
-class TorchModule
+class API_DECLSPEC TorchModule
 {
 private:
-	torch::jit::Module module;
-	torch::Device device;
-	cv::Mat img;
+	std::string module;
+	std::string device;
+	// cv::Mat img;
+	std::string img;
 	std::vector<std::string>label;
-	cv::String imgFolderRoute;
+	// cv::String imgFolderRoute;
+	std::string imgFolderRoute;
 public:
 	TorchModule(const std::string ModuleRoute);
 	TorchModule();
@@ -24,5 +30,8 @@ public:
 	void setImgsFolderRoute(std::string in);
 
 	void classifyImgs(std::string imgsRoute, std::string outPutRoute);
+
+	void setModule(std::string moduleRoute);
 };
 
+#endif //_TORCHMODULE_

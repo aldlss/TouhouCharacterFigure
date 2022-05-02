@@ -23,12 +23,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
@@ -41,18 +41,24 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">F:\code\work\TouhouCharacterFigure\TorchModule\x64\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TorchModule.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TorchModule</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">F:\code\work\TouhouCharacterFigure\TorchModule\x64\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TorchModule.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TorchModule</TargetName>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <CopyLocalProjectReference>false</CopyLocalProjectReference>
+    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -71,7 +77,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NOMINMAX;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NOMINMAX;CMAKE_INTDIR="Debug";_EXPORTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
@@ -90,7 +96,9 @@
       <Message>
       </Message>
       <Command>setlocal
-xcopy F:\code\useful\libtorch1.11\libtorchd\libtorch\lib F:\code\work\TouhouCharacterFigure\TorchModule\x64\Debug /D /Y
+xcopy F:\code\useful\libtorch1.11\libtorchd\libtorch\lib $(SolutionDir)$(Platform)\$(Configuration)\ /D /Y
+if %errorlevel% neq 0 goto :cmEnd
+xcopy F:\code\useful\opencv\4.5.5\install\x64\vc17\lib\opencv_world455d.lib $(SolutionDir)$(Platform)\$(Configuration)\ /D /Y
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -100,7 +108,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\caffe2_nvrtc.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\c10.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\c10_cuda.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cpu.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda_cpp.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda_cu.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudart.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudnn.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\curand.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;-INCLUDE:?warp_size@cuda@at@@YAHXZ;-INCLUDE:?_torch_cuda_cu_linker_symbol_op_cuda@native@at@@YA?AVTensor@2@AEBV32@@Z;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(opencv_dir)\lib\opencv_world455d.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\caffe2_nvrtc.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\c10.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\c10_cuda.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cpu.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda_cpp.lib;F:\code\useful\libtorch1.11\libtorchd\libtorch\lib\torch_cuda_cu.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudart.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudnn.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\curand.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;-INCLUDE:?warp_size@cuda@at@@YAHXZ;-INCLUDE:?_torch_cuda_cu_linker_symbol_op_cuda@native@at@@YA?AVTensor@2@AEBV32@@Z;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,7 +123,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>F:\code\useful\libtorch1.11\libtorch\include;F:\code\useful\libtorch1.11\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(opencv_dir)\..\..\include;F:\code\useful\libtorch1.11\libtorch\include;F:\code\useful\libtorch1.11\libtorch\include\torch\csrc\api\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\include;C:\Program Files\NVIDIA Corporation\NvToolsExt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DisableSpecificWarnings>4267;4251;4522;4838;4305;4244;4190;4101;4996;4275</DisableSpecificWarnings>
@@ -128,7 +136,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOMINMAX;CMAKE_INTDIR="Release";_EXPORTING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
@@ -149,7 +157,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Message>
       </Message>
       <Command>setlocal
-xcopy F:\code\useful\libtorch1.11\libtorch\lib F:\code\work\TouhouCharacterFigure\TorchModule\x64\Release /D /Y
+xcopy F:\code\useful\libtorch1.11\libtorch\lib F:\code\work\TouhouCharacterFigure\x64\Release /D /Y
+if %errorlevel% neq 0 goto :cmEnd
+xcopy F:\code\useful\opencv\4.5.5\install\x64\vc17\lib\opencv_world455.lib F:\code\work\TouhouCharacterFigure\x64\Release /D /Y
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -159,7 +169,7 @@ exit /b %1
 if %errorlevel% neq 0 goto :VCEnd</Command>
     </PostBuildEvent>
     <Link>
-      <AdditionalDependencies>F:\code\useful\libtorch1.11\libtorch\lib\caffe2_nvrtc.lib;F:\code\useful\libtorch1.11\libtorch\lib\c10.lib;F:\code\useful\libtorch1.11\libtorch\lib\c10_cuda.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cpu.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda_cpp.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda_cu.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudart.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudnn.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\curand.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;-INCLUDE:?warp_size@cuda@at@@YAHXZ;-INCLUDE:?_torch_cuda_cu_linker_symbol_op_cuda@native@at@@YA?AVTensor@2@AEBV32@@Z;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(opencv_dir)\lib\opencv_world455.lib;F:\code\useful\libtorch1.11\libtorch\lib\caffe2_nvrtc.lib;F:\code\useful\libtorch1.11\libtorch\lib\c10.lib;F:\code\useful\libtorch1.11\libtorch\lib\c10_cuda.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cpu.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda_cpp.lib;F:\code\useful\libtorch1.11\libtorch\lib\torch_cuda_cu.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cublas.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudart.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cudnn.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\cufft.lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.4\lib\x64\curand.lib;C:\Program Files\NVIDIA Corporation\NvToolsExt\lib\x64\nvToolsExt64_1.lib;-INCLUDE:?warp_size@cuda@at@@YAHXZ;-INCLUDE:?_torch_cuda_cu_linker_symbol_op_cuda@native@at@@YA?AVTensor@2@AEBV32@@Z;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -176,6 +186,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="TorchModule.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="testmain.cpp" />
     <ClCompile Include="TorchModule.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
